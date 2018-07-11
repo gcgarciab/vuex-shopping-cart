@@ -17,6 +17,12 @@ export default new Vuex.Store({
       return state.products.filter(product => product.inventory > 0)
     },
 
+    productIsInStock () {
+      return (product) => {
+        return product.inventory > 0
+      }
+    },
+
     cartProducts (state) {
       return state.cart.map(cartItem => {
         const product = state.products.find(product => product.id === cartItem.id);
@@ -50,16 +56,16 @@ export default new Vuex.Store({
       })
     },
 
-    addProductToCart (context, product) {
-      if (product.inventory > 0) {
-        const cartItem = context.state.cart.find(item => item.id === product.id);
+    addProductToCart ({state, getters, commit}, product) {
+      if (getters.productIsInStock(product)) {
+        const cartItem = state.cart.find(item => item.id === product.id);
 
         if (!cartItem) {
-          context.commit('pushProductToCart', product.id)
+          commit('pushProductToCart', product.id)
         } else {
-          context.commit('incrementQuantity', cartItem)
+          commit('incrementQuantity', cartItem)
         }
-        context.commit('decrementProductInventory', product)
+        commit('decrementProductInventory', product)
       }
     },
 
