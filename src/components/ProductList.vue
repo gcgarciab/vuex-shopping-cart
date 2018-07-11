@@ -15,36 +15,39 @@
 </template>
 
 <script>
-
-    export default {
-      data () {
-        return {
-          loading: false
-        }
-      },
-
-      computed: {
-         products () {
-           return this.$store.state.products
-         },
-
-        productIsInStock () {
-           return this.$store.getters.productIsInStock
-        }
-      },
-
-      methods: {
-        addProductToCart (product) {
-          this.$store.dispatch('addProductToCart', product)
-        }
-      },
-
-      created () {
-        this.loading = true;
-        this.$store.dispatch('fetchProducts')
-          .then(() => this.loading = false)
+  import {mapState, mapGetters, mapActions} from 'vuex'
+  export default {
+    data () {
+      return {
+        loading: false
       }
+    },
+
+    computed: {
+      ...mapState ({
+        products: state => state.products
+      }),
+
+      ...mapGetters ({
+        productIsInStock: 'productIsInStock'
+      }),
+    },
+
+    methods: {
+      ...mapActions ({
+        fetchProducts: 'fetchProducts',
+        addProductToCart: 'addProductToCart'
+      })
+    },
+
+    created () {
+      this.loading = true;
+      //  mapActions mapea los métodos locales a store.dispatch
+      // this.$store.dispatch('fetchProducts')
+      this.fetchProducts()
+        .then(() => this.loading = false)
     }
+  }
 </script>
 
 <style scoped>
